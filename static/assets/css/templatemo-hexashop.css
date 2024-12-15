@@ -594,7 +594,12 @@ header
 .header-area.header-sticky .nav li a.active {
   color: #aaa;
 }
-
+.show-desktop-menu {
+  display: block;
+}
+.show-mob-menu {
+  display: none;
+}
 @media (max-width: 1200px) {
   .header-area .main-nav .nav li {
     padding-left: 12px;
@@ -702,6 +707,12 @@ header
   .header-area .main-nav .nav li.submenu:hover ul,
   .header-area .main-nav .nav li.submenu:focus ul {
     height: 0px;
+  }
+  .show-desktop-menu {
+    display: none;
+  }
+  .show-mob-menu {
+    display: block;
   }
 }
 

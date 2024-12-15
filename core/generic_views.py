@@ -201,7 +201,6 @@ def activate(request, uidb64, token):
         return render(request,'authentication/activation_failed.html')
 
 
-@login_required(login_url='/auth/login/')
 def landing_page_view(request):
     return render(request, "components/landing-page.html")
 
