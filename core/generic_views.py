@@ -57,28 +57,28 @@ def signup_view(request):
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exist! Please try some other username.")
-            return redirect('home')
+            return redirect('signup')
         
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email Already Registered!!")
-            return redirect('home')
+            return redirect('signup')
         
         if len(username)>20:
             messages.error(request, "Username must be under 20 charcters!!")
-            return redirect('home')
+            return redirect('signup')
         
         
         
         if not username.isalnum():
             messages.error(request, "Username must be Alpha-Numeric!!")
-            return redirect('home')
+            return redirect('signup')
         
         
         user = User.objects.create_user(username, email, password1)
         user.is_active = True
         user.save()
         messages.success(request, "Your account has been successfully created")
-        return redirect('home')
+        return redirect('login')
     else:
         return render(request, "components/auth.html", {'form_type': 'signup'})
 
@@ -279,8 +279,19 @@ def cart_view(request):
         "total_price": total_price,
     }
     return render(request, "components/cart.html", context)
-    
 
+@login_required(login_url='/auth/login/')
+def remove_from_cart(request, item_id):
+    if request.method == 'POST':
+        try:
+            cart_item = get_object_or_404(Cart, id=item_id, user=request.user)
+            cart_item.delete()  # Delete the item from the cart
+            messages.success(request, "Item removed from cart!")
+            return redirect('user_cart')  # Replace 'cart' with your actual URL name if needed
+        except Cart.DoesNotExist:
+            messages.error(request, "Failed to remove item from cart.")
+            return redirect('home')  # Adjust as needed for your flow
+    return redirect('home')  # Adjust as needed
 
 @login_required(login_url='/auth/login/')
 def order_view(request):

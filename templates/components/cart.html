@@ -14,6 +14,7 @@
 <br>
 <br>
 <br>
+{% include 'base/alert-message.html' %}
 
 <div class="card" id="cart_page">
     <div class="row">
@@ -39,8 +40,9 @@
                         <a>{{item.quantity}}</a>
                         <!-- <a href="#">+</a> -->
                     </div>
-                    <div class="col" style="display:flex; align-items:center;">{{item.product.sale_price}} PKR <span
-                            class="close">&#10005;</span>
+                    <div class="col" style="display: flex; align-items: center;">
+                        {{ item.product.sale_price }} PKR
+                        <span class="close" data-item-id="{{ item.id }}" onclick="removeFromCart(this)">&#10005;</span>
                     </div>
                 </div>
             </div>
@@ -256,5 +258,37 @@
         background-position-x: 95%;
         background-position-y: center;
     }
+    .close {
+    cursor: pointer; /* Make it look clickable */
+    font-size: 24px; /* Adjust size if needed */
+    color: rgb(51, 27, 27); /* Optional: Set the color of the cross */
+    font-weight: bold; /* Optional: Make the cross bolder */
+    user-select: none; /* Prevent selection of the cross */
+}
 </style>
+
+<script>
+    function removeFromCart(button) {
+        const itemId = button.getAttribute('data-item-id');
+
+        // Create a form to send POST request for removing item
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/cart/remove/${itemId}/`;  // Adjust URL to your view
+
+        // Create a CSRF token input for security
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);  // Append form to body (it won't be visible)
+
+        form.submit();  // Submit the form
+    }
+</script>
+    
+
 {% endblock site_content %}

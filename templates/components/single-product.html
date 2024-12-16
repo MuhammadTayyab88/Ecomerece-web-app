@@ -11,26 +11,6 @@
 {% block site_content %}
 <br>
 <br>
-<br>
-<br>
-<hr>
-
-
-<!-- ***** Main Banner Area Start ***** -->
-<div class="page-heading" id="top">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="inner-content">
-                    <h2>Single Product Page</h2>
-                    <span>Awesome &amp; Creative HTML CSS layout TemplateMo</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- ***** Main Banner Area End ***** -->
-
 
 <!-- ***** Product Area Starts ***** -->
 <section class="section" id="product">
@@ -74,7 +54,7 @@
                         </div>
                     </div>
                     <div class="total">
-                        <h4 id="total-price">Total: 210.00 PKR</h4>
+                        <h4 id="total-price">Total: {{product.sale_price}} PKR</h4>
                         <div class="main-border-button"><a id="add-to-cart-button">Add To Cart</a></div>
                     </div>
                 </div>
@@ -87,7 +67,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const pricePerItem = 210.00; // Base price per item
+        const pricePerItem = {{ product.sale_price|floatformat:4 }}; // Base price per item
         const minusButton = document.querySelector('.minus');
         const plusButton = document.querySelector('.plus');
         const quantityInput = document.querySelector('input[name="quantity"]');
@@ -113,12 +93,6 @@
 
         quantityInput.addEventListener('input', updateTotalPrice);
         updateTotalPrice();
-
-
-
-
-
-
 
         addToCartButton.addEventListener('click', function (event) {
             event.preventDefault();

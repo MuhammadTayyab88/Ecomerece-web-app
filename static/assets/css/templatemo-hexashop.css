@@ -405,7 +405,7 @@ header
   font-size: 12px;
   color: #2a2a2a;
   position: absolute;
-  right: 18px;
+  right: 10px;
   top: 12px;
 }
 
@@ -458,7 +458,7 @@ header
 }
 
 .header-area .main-nav .nav li.submenu ul li a:hover:before {
-  width: 3px;
+  width: 50px;
 }
 
 .header-area .main-nav .nav li.submenu:hover ul {
@@ -699,10 +699,11 @@ header
   .header-area .main-nav .nav li.submenu ul.active {
     height: auto !important;
   }
+  
+ 
   .header-area .main-nav .nav li.submenu:after {
     color: #3b566e;
-    right: 25px;
-    font-size: 14px;
+    font-size: 21px;
     top: 15px;
   }
   .header-area .main-nav .nav li.submenu:hover ul,
@@ -724,6 +725,10 @@ header
 @media (min-width: 767px) {
   .header-area .main-nav .nav {
     display: flex !important;
+  }
+  .header-area .main-nav .nav li.submenu:after {
+    right: 110px;
+    top: 7;
   }
 }
 
@@ -752,8 +757,8 @@ banner
 }
 
 .main-banner .left-content .inner-content h4 {
-  color: #fff;
-  margin-top: -10px;
+  color: #ffffff86;
+  margin-top: 10px;
   font-size: 52px;
   font-weight: 700;
   margin-bottom: 20px;
@@ -2311,9 +2316,7 @@ responsive
   .main-banner .right-content .right-first-image .thumb .hover-content p {
     display: block;
   }
-  .header-area .main-nav .nav li.submenu:after {
-    right: 3px;
-  }
+
   .header-area .main-nav .nav li.submenu {
     padding-right: 15px;
   }
@@ -2372,6 +2375,10 @@ responsive
   }
   footer h4 {
     margin-top: 30px;
+  }
+  .header-area .main-nav .nav li.submenu:after {
+    right: 110px;
+    top: 7;
   }
 }
 

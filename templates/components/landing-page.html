@@ -13,11 +13,8 @@
                 <div class="left-content">
                     <div class="thumb">
                         <div class="inner-content">
-                            <h4>We Are Hexashop</h4>
-                            <span>Awesome, clean &amp; creative HTML5 Template</span>
-                            <div class="main-border-button">
-                                <a href="#">Purchase Now!</a>
-                            </div>
+                            <h4>Welcome to My IQ Collections</h4>
+                            <span>Premier Destination for &amp;Exclusive Fashion & Lifestyle</span>
                         </div>
                         <img src="../../static/assets/images/left-banner-image.jpg" alt="">
                     </div>
@@ -91,7 +88,7 @@
                                         <li><a href="{% url 'product_detail' item.id %}"><i class="fa fa-eye"></i></a>
                                         </li>
                                         <!-- <li><a href="single-product.html"><i class="fa fa-star"></i></a></li> -->
-                                        <li><a href="single-product.html"><i class="fa fa-shopping-cart"></i></a></li>
+                                        <li><a href="{% url 'product_detail' item.id %}"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
                                 {% for item_img in item.product_images.all|slice:":1" %}

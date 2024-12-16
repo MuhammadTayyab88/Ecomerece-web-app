@@ -10,6 +10,17 @@
     </li>
     {% endfor %}
 </ul>
+<script>
+    // Make alert disappear after 5 seconds
+    window.addEventListener('DOMContentLoaded', () => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.classList.remove('open');
+            }, 2000);  // 5000ms = 5 seconds
+        });
+    });
+</script>
 <style>
     .alert-message {
         line-height: 20px;
