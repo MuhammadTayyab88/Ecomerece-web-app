@@ -1,9 +1,9 @@
 {% load static %}
 
 <header class="header-area header-sticky">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-10">
+            <div class="col-lg-12">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
                     <a href="index.html" class="logo">
@@ -11,10 +11,10 @@
                     </a>
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
-                    <ul class="nav">
-                       
-                        {% for cat in main_category %}
-                        <li class="submenu show-desktop-menu">
+                </ul>
+                <ul class="nav">
+                        {% for cat in main_category %} 
+                        <li class="submenu  show-desktop-menu">
                             <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
                             <ul>
                                 {% for sub in cat.sub_category.all %}
@@ -23,8 +23,73 @@
                             </ul>
                         </li>
                         {% endfor %}
-                        <!-- HTML !-->
+                        <li class="scroll-to-section"><a href="{% url 'about' %}">About Us</a></li>
+                        <li class="scroll-to-section"><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li class="scroll-to-section"><a href="/">Home</a></li>
+                          {% if user.is_authenticated %}
+                    <li class="scroll-to-section"><a href="{% url 'user_cart' %}" >Cart</a></li>
+                        
+                    <li class="scroll-to-section"><a href="{% url 'logout' %}" >Logout</a></li>
+                    {% else %}
+                   <li class="scroll-to-section"> <a href="{% url 'auth' 'login' %}" >Login </a></li>
+                   <li class="scroll-to-section"> <a href="{% url 'auth' 'signup' %}">Sign up</a></li>
+                    {% endif %}
+                        
+                    {% for cat in main_category %} 
+                        <li class="submenu  show-mob-menu">
+                            <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
+                            <ul>
+                                {% for sub in cat.sub_category.all %}
+                                <li><a href="{% url 'filter_products' cat.name sub.name %}">{{sub.name}}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    </ul>
 
+
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- {% load static %}
+
+<header class="header-area header-sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 ">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <a href="{% url 'home'%}" class="logo">
+                        <img src="{% static 'assets/images/logoN.png' %}">
+                    </a>
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav sidebar">
+                        {% for cat in main_category %}
+                        <li class="submenu show-desktop-menu">
+                            <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
+                        {% endfor %}
+                            <ul>
+                                {% for sub in cat.sub_category.all %}
+                                <li><a href="{% url 'filter_products' cat.name sub.name %}">{{sub.name}}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        
+
+                        <!-- HTML !-->
+                        <li class="scroll-to-section"><a href="{% url 'about' %}">About Us</a></li>
+                        <li class="scroll-to-section"><a href="{% url 'contact' %}">Contact Us</a></li>
                         <li class="scroll-to-section"><a href="/">Home</a></li>
                         {% if user.is_authenticated %}
                         <li class="scroll-to-section"><a href="{% url 'user_cart' %}">Cart</a></li>
@@ -32,7 +97,7 @@
                         
                         {% else %}
                         <li class="scroll-to-section"><a href="{% url 'auth' 'login' %}" >Login </a></li>
-                        <li class="scroll-to-section"><a href="{% url 'auth' 'signup' %}">Sign up</a></li>
+                        <li class="scroll-to-section"><a href="{% url 'auth' 'signup' %}">Sign Up</a></li>
                         {% endif %}
 
                         <!-- <li class="scroll-to-section"><a href="#explore">Explore</a></li> -->
@@ -53,9 +118,9 @@
                         <span>Menu</span>
                     </a>
                     <!-- ***** Menu End ***** -->
+
                 </nav>
             </div>
-            
         </div>
     </div>
-</header>
+</header> -->

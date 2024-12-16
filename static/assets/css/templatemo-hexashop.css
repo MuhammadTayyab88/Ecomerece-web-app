@@ -211,6 +211,7 @@ body {
   .mobile-bottom-fix-big {
     margin-bottom: 60px;
   }
+
 }
 
 .main-border-button a {
@@ -713,6 +714,10 @@ header
   }
   .show-mob-menu {
     display: block;
+  }
+  .sidebar {
+    padding-right: 230px;
+    padding-left: 0px;
   }
 }
 
@@ -2448,3 +2453,5 @@ responsive
     opacity: 0;
   }
 }
+
+

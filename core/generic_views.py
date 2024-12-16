@@ -45,7 +45,6 @@ def auth_view(request, type):
         return render(request, "components/auth.html", {'form_type': 'signup'})
     else:
         return render(request, "components/auth.html", {'form_type': 'login'})
-    
 
 
 def signup_view(request):
@@ -245,6 +244,7 @@ def product_detail_view(request, pk):
     context = {"product": product}
     return render(request, "components/single-product.html", context)
 
+
 @login_required(login_url='/auth/login/')
 def add_cart_view(request, pk, quantity):
     product = Product.objects.get(id=pk)
@@ -282,7 +282,7 @@ def cart_view(request):
     
 
 
-
+@login_required(login_url='/auth/login/')
 def order_view(request):
     if request.method =="POST":
         phone_number = request.POST.get("phone_number")
@@ -317,4 +317,35 @@ def order_view(request):
     return redirect("user_cart")
     
         
-        
+@login_required(login_url='/auth/login/')
+def about_view(request):
+    return render(request, "base/about.html")
+
+@login_required(login_url='/auth/login/')
+def contact_view(request):
+    if request.method == 'POST':
+        # Get the data from the form
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        if name and email and message:
+            try:
+                send_mail(
+                    f"Message from {name}",
+                    message,
+                    email,
+                    ['iqcollectionsstore@gmail.com'],  # Add your email here
+                    fail_silently=False,
+                )
+                messages.success(request, "Your message has been sent successfully.")
+                return redirect('base/contact_success')  # Redirect to a success page
+            except Exception as e:
+                messages.error(request, "There was an error sending your message. Please try again later.")
+                return redirect('contact')
+        else:
+            messages.error(request, "Please fill in all fields.")
+            return redirect('contact')
+    return render(request, 'base/contact.html')
+
+def contact_success(request):
+    return render(request, 'base/contact_success.html')
