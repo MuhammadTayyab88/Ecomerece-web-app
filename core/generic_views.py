@@ -1,5 +1,3 @@
-import random
-
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -103,7 +101,6 @@ def login_view(request):
 
 
 def signout(request):
-    # Log out the user
     logout(request)
 
     messages.success(request, "Logged Out Successfully!")
@@ -118,7 +115,6 @@ def forgot(request):
             try:
                 user = User.objects.get(email=email)
                 
-                # Generate the unique URL for password reset
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 token = default_token_generator.make_token(user)
                 current_site = get_current_site(request)
@@ -126,13 +122,11 @@ def forgot(request):
                 reset_link = f'http://{current_site.domain}{reset_url}'
                 
                 mail_subject = 'Password Reset'
-                # Render the email template with the reset link
                 message = render_to_string('authentication/reset_password_email.html', {
                     'user': user,
                     'reset_link': reset_link,
                 })
 
-                # Send the password reset email to the user
                 user.email_user(mail_subject, message)
 
                 messages.success(request, "The password reset email has been sent successfully.")
@@ -150,7 +144,6 @@ def forgot(request):
 @login_required(login_url='/auth/login/')
 def change(request, uidb64, token):
     try:
-        # Decode the uid from the URL and retrieve the user
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
         if default_token_generator.check_token(user, token):
@@ -159,7 +152,6 @@ def change(request, uidb64, token):
                 password2 = request.POST.get('password2')
 
                 if password1 and password2 and password1 == password2:
-                    # Set the new password for the user
                     user.password = make_password(password1)
                     user.save()
                     messages.success(request, f"Password changed successfully for user: {user.username}")
@@ -179,24 +171,19 @@ def change(request, uidb64, token):
 
 def activate(request, uidb64, token):
     try:
-        # Decode the uidb64 parameter to get the user ID
         uid = urlsafe_base64_decode(uidb64).decode()
-        # Get the user with the corresponding ID
         myuser = User.objects.get(pk=uid)
     except (TypeError,ValueError,OverflowError,User.DoesNotExist):
-        # Handle exceptions if the decoding or user retrieval fails
         myuser = None
 
     if myuser is not None and generate_token.check_token(myuser,token):
-        # If the user exists and the token is valid
         myuser.is_active = True
-        myuser.save() # Activate the user
-        login(request,myuser) # Log in the user
+        myuser.save() 
+        login(request,myuser) 
         messages.success(request, "Your Account has been activated!")
         username = myuser.username
         return render(request, "authentication/index.html", {'username': username})
     else:
-        # If the activation fails, render the activation failed template
         return render(request,'authentication/activation_failed.html')
 
 
@@ -248,8 +235,6 @@ def product_detail_view(request, pk):
 @login_required(login_url='/auth/login/')
 def add_cart_view(request, pk, quantity):
     product = Product.objects.get(id=pk)
-    # price = product.sale_price
-    # total_price = price*quantity
     cart  = Cart.objects.get_or_create(
         user=request.user,
         product = product,
@@ -335,7 +320,6 @@ def about_view(request):
 @login_required(login_url='/auth/login/')
 def contact_view(request):
     if request.method == 'POST':
-        # Get the data from the form
         name = request.POST.get('name')
         email = request.POST.get('email')
         message = request.POST.get('message')
@@ -345,11 +329,11 @@ def contact_view(request):
                     f"Message from {name}",
                     message,
                     email,
-                    ['iqcollectionsstore@gmail.com'],  # Add your email here
+                    ['iqcollectionsstore@gmail.com'], 
                     fail_silently=False,
                 )
                 messages.success(request, "Your message has been sent successfully.")
-                return redirect('base/contact_success')  # Redirect to a success page
+                return redirect('base/contact_success')  
             except Exception as e:
                 messages.error(request, "There was an error sending your message. Please try again later.")
                 return redirect('contact')
