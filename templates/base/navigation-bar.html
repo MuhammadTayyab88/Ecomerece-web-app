@@ -5,21 +5,13 @@
         <div class="row">
             <div class="col-lg-12">
                 <nav class="main-nav">
-                    <!-- ***** Logo Start ***** -->
                     <a href="{% url 'home' %}" class="logo">
                         <img src="{% static 'assets/images/nav-logo.png' %}">
                     </a>
-                    <!-- ***** Logo End ***** -->
-                    <!-- ***** Menu Start ***** -->
+                
                 </ul>
                 <ul class="nav">
-                        
                         <li class="scroll-to-section"><a href="{% url 'home' %}">Home</a></li>
-                        
-                        
-                          
-                        
-                    
                     {% for cat in main_category %} 
                     <li class="submenu  show-desktop-menu">
                         <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
@@ -29,6 +21,7 @@
                             {% endfor %}
                         </ul>
                     </li>
+                    {% endfor %}
                         {% for cat in main_category %} 
                            <li class="submenu  show-mob-menu">
                         <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
@@ -39,7 +32,6 @@
                         </ul>
                     </li>
                         {% endfor %}
-                    {% endfor %}
                     {% if user.is_authenticated %}
                     <li class="scroll-to-section"><a href="{% url 'user_cart' %}" >Cart</a></li>
                     <li class="scroll-to-section"><a href="{% url 'about' %}">About Us</a></li>
@@ -60,7 +52,6 @@
                     <a class='menu-trigger'>
                         <span>Menu</span>
                     </a>
-                    <!-- ***** Menu End ***** -->
                 </nav>
             </div>
         </div>
