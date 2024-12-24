@@ -24,7 +24,7 @@
                     {% endfor %}
                         {% for cat in main_category %} 
                            <li class="submenu  show-mob-menu">
-                        <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
+                        <a href="{% url 'products' cat.name  %}">{{cat.name}} <span class="arrow">&#x25BC;</span> </a>
                         <ul>
                             {% for sub in cat.sub_category.all %}
                             <li><a href="{% url 'filter_products' cat.name sub.name %}">{{sub.name}}</a></li>
@@ -36,10 +36,10 @@
                     <li class="scroll-to-section"><a href="{% url 'user_cart' %}" >Cart</a></li>
                     <li class="scroll-to-section"><a href="{% url 'about' %}">About Us</a></li>
                     <li class="scroll-to-section"><a href="{% url 'contact' %}">Contact Us</a></li>
-                    <li class="scroll-to-section"><a href="{% url 'logout' %}" >Logout</a></li>
+                    <li class="scroll-to-section";><a href="{% url 'logout' %}" ><span style="color: rgb(255, 0, 0);">Logout</span></a></li>
                     {% else %}
-                   <li class="scroll-to-section"> <a href="{% url 'auth' 'login' %}" >Login </a></li>
-                   <li class="scroll-to-section"> <a href="{% url 'auth' 'signup' %}">Sign up</a></li>
+                   <li class="scroll-to-section"> <a href="{% url 'auth' 'login' %}" ><span style="color: rgb(49, 187, 22);">Login</span> </a></li>
+                   <li class="scroll-to-section"> <a href="{% url 'auth' 'signup' %}"><span style="color: rgb(49, 187, 22);">Sign up</span></a></li>
                     {% endif %}
 
 
@@ -57,3 +57,62 @@
         </div>
     </div>
 </header>
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    const menuItems = document.querySelectorAll('.submenu > a');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent default navigation
+
+            const parent = this.parentElement;
+            const dropdown = parent.querySelector('ul');
+            const arrow = this.querySelector('.arrow');
+
+            if (dropdown) {
+                // Check if the dropdown is already visible
+                const isDropdownVisible = dropdown.classList.contains('show');
+
+                // Hide all other open dropdowns
+                document.querySelectorAll('.submenu ul.show').forEach(openDropdown => {
+                    openDropdown.classList.remove('show');
+                    const openArrow = openDropdown.previousElementSibling.querySelector('.arrow');
+                    if (openArrow) {
+                        openArrow.innerHTML = '▼'; // Reset arrow to down
+                    }
+                });
+
+                // Toggle current dropdown
+                if (isDropdownVisible) {
+                    dropdown.classList.remove('show');
+                    arrow.innerHTML = '▼'; // Reset arrow to down
+                } else {
+                    dropdown.classList.add('show');
+                    arrow.innerHTML = '▲'; // Set arrow to up
+                }
+            }
+        });
+    });
+});
+
+
+</script>
+
+<style>
+    .submenu ul {
+    display: none;
+    list-style: none;
+    
+}
+
+.submenu ul.show {
+    display: block;
+}
+
+/* Optional styling for arrow */
+.arrow {
+    
+    transition: transform 0.3s ease;
+}
+
+</style>

@@ -407,6 +407,7 @@ header
   position: absolute;
   right: 10px;
   top: 12px;
+  display: none;
 }
 
 .background-header .main-nav .nav li.submenu:after {
