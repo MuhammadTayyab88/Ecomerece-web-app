@@ -89,14 +89,15 @@ def login_view(request):
         password = request.POST.get('password', None)
         if not username or not password:
             messages.error(request, "Credentials are not provided!")
-            return redirect('home')
+            return redirect('login')
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            messages.success(request, "Login Successfully!")
+            return redirect('login')
         else:
             messages.error(request, "Bad Credentials!")
-            return redirect('home')
+            return redirect('login')
     return render(request, "components/auth.html", {'form_type': 'login'})
 
 
