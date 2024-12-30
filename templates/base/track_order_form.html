@@ -1,0 +1,18 @@
+{% extends 'base/layout.html' %}
+{% load static %}
+{% block site_content %}
+<br>
+<br> 
+<br>
+<div class="container mt-5">
+    <h2>Track Your Order</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="order_id">Enter Your Order ID:</label>
+            <input type="text" class="form-control" id="order_id" name="order_id" placeholder="Order ID" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Track Order</button>
+    </form>
+</div>
+{% endblock site_content %}

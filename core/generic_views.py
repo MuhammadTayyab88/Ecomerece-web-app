@@ -17,18 +17,16 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
-from twilio.rest import Client
 from django.db.models import Sum, F
-from django.shortcuts import render
 from .models import Cart
 from .models import *
-
+import uuid
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -65,12 +63,9 @@ def signup_view(request):
             messages.error(request, "Username must be under 20 charcters!!")
             return redirect('signup')
         
-        
-        
         if not username.isalnum():
             messages.error(request, "Username must be Alpha-Numeric!!")
             return redirect('signup')
-        
         
         user = User.objects.create_user(username, email, password1)
         user.is_active = True
@@ -103,7 +98,6 @@ def login_view(request):
 
 def signout(request):
     logout(request)
-
     messages.success(request, "Logged Out Successfully!")
     return redirect('home')
 
@@ -111,38 +105,49 @@ def signout(request):
 def forgot(request):
     if request.method == "POST":
         email = request.POST.get('pass-forgot')
-        
+
         if email:
             try:
                 user = User.objects.get(email=email)
-                
+
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 token = default_token_generator.make_token(user)
                 current_site = get_current_site(request)
                 reset_url = reverse('change', kwargs={'uidb64': uid, 'token': token})
                 reset_link = f'http://{current_site.domain}{reset_url}'
-                
+
                 mail_subject = 'Password Reset'
-                message = render_to_string('authentication/reset_password_email.html', {
+                # Render the HTML email template
+                html_content = render_to_string('components/reset_password_email.html', {
                     'user': user,
                     'reset_link': reset_link,
                 })
+                # Strip tags for plain-text fallback
+                plain_message = strip_tags(html_content)
 
-                user.email_user(mail_subject, message)
+                # Send email using EmailMultiAlternatives
+                email = EmailMultiAlternatives(
+                    subject=mail_subject,
+                    body=plain_message,
+                    from_email='your-email@example.com',
+                    to=[user.email]
+                )
+                email.attach_alternative(html_content, "text/html")
+                email.send()
 
                 messages.success(request, "The password reset email has been sent successfully.")
                 return redirect('home')
 
             except User.DoesNotExist:
                 messages.error(request, "Sorry, the user with this email address is not registered.")
-                return redirect('home')
+                return redirect('forget')
         else:
             messages.error(request, "Please try to enter a valid email address next time.")
-            return redirect('home')
-    
-    return render(request, "authentication/forgot.html")
+            return redirect('forget')
 
-@login_required(login_url='/auth/login/')
+    return render(request, "components/auth.html", {"form_type": "forget"})
+
+
 def change(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -161,7 +166,7 @@ def change(request, uidb64, token):
                     messages.error(request, "Passwords do not match or some fields are empty. Please try again.")
                     return redirect('home')
             else:
-                return render(request, "authentication/change_password.html", {'user': user, 'uidb64': uidb64, 'token': token})
+                return render(request, "components/auth.html", {'user': user, 'uidb64': uidb64, 'token': token, "form_type": "change"})
         else:
             messages.error(request, "The password reset link is no longer valid.")
             return redirect('home')
@@ -183,9 +188,9 @@ def activate(request, uidb64, token):
         login(request,myuser) 
         messages.success(request, "Your Account has been activated!")
         username = myuser.username
-        return render(request, "authentication/index.html", {'username': username})
+        return render('login')
     else:
-        return render(request,'authentication/activation_failed.html')
+        return render(request,'components/change_password.html')
 
 
 def landing_page_view(request):
@@ -281,67 +286,120 @@ def remove_from_cart(request, item_id):
 
 @login_required(login_url='/auth/login/')
 def order_view(request):
-    if request.method =="POST":
+    if request.method == "POST":
         phone_number = request.POST.get("phone_number")
         address_line1 = request.POST.get("address_line1")
         city = request.POST.get("city")
         state = request.POST.get("state")
         postal_code = request.POST.get("postal_code")
+        user = request.user
+
+        # Create a new address
         address = Address.objects.create(
-            user  =  request.user,
-            phone_number = phone_number,
-            address_line1 = address_line1,
-            city = city,
-            state = state,
-            postal_code = postal_code,
-            address_type = "shipping",
+            user=user,
+            phone_number=phone_number,
+            address_line1=address_line1,
+            city=city,
+            state=state,
+            postal_code=postal_code,
+            address_type="shipping",
         )
-        cart_items = Cart.objects.filter(user=request.user)
+
+        # Calculate total price
+        cart_items = Cart.objects.filter(user=user)
         total_product_price = cart_items.aggregate(
             total=Sum(F('quantity') * F('product__sale_price'))
-        )['total'] or 0 
+        )['total'] or 0
+
+        # Create a new order
         import uuid
-        Order.objects.create(
-            user = request.user,
-            shipping_address = address,
-            billing_address = address,
-            total_amount = total_product_price + 200,
-            transaction_id=str(uuid.uuid4().int)[:5]
+        order = Order.objects.create(
+            user=user,
+            shipping_address=address,
+            billing_address=address,
+            total_amount=total_product_price + 200,  # Adding shipping charges
+            transaction_id=str(uuid.uuid4().int)[:5],
         )
+
+        # Clear the cart
         cart_items.delete()
-        messages.success(request, "Order placed successfully")
+
+        # Send email confirmation
+        subject = "Order Confirmation - Your Order Details"
+        message = (
+            f"Hello {user.username},\n\n"
+            f"Thank you for your order!\n"
+            f"Order ID: {order.id}\n"
+            f"Total Amount: ${order.total_amount}\n\n"
+            f"You can track your order using the Order ID.\n"
+            f"If you have any questions, feel free to contact our support team.\n\n"
+            f"Best regards,\nThe Team"
+        )
+        recipient_list = [user.email]
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list)
+
+        # Success message and redirect
+        messages.success(request, "Order placed successfully. A confirmation email has been sent.")
         return redirect("user_cart")
+
     return redirect("user_cart")
+
     
         
 @login_required(login_url='/auth/login/')
 def about_view(request):
     return render(request, "base/about.html")
 
-@login_required(login_url='/auth/login/')
+
 def contact_view(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
         message = request.POST.get('message')
+        
         if name and email and message:
             try:
                 send_mail(
-                    f"Message from {name}",
+                    f"Message from {email,name}",
                     message,
                     email,
                     ['iqcollectionsstore@gmail.com'], 
                     fail_silently=False,
                 )
                 messages.success(request, "Your message has been sent successfully.")
-                return redirect('base/contact_success')  
+                return redirect('contact')  
             except Exception as e:
-                messages.error(request, "There was an error sending your message. Please try again later.")
+                # Display the exact error in the message for debugging
+                error_message = f"There was an error sending your message: {str(e)}"
+                messages.error(request, error_message)
                 return redirect('contact')
         else:
             messages.error(request, "Please fill in all fields.")
             return redirect('contact')
     return render(request, 'base/contact.html')
 
+
 def contact_success(request):
     return render(request, 'base/contact_success.html')
+
+
+
+
+def track_order_view(request):
+    if request.method == "POST":
+        order_id = request.POST.get("order_id", "").strip()
+        try:
+            # Fetch the order by ID
+            order = Order.objects.get(id=order_id)
+            
+            # Ensure the order belongs to the logged-in user
+            if order.user != request.user:
+                messages.error(request, "You are not authorized to view this order.")
+                return redirect("track_order")
+
+            return render(request, "base/track_order.html", {"order": order})
+        except Order.DoesNotExist:
+            messages.error(request, "Order not found. Please check the Order ID.")
+            return redirect("track_order")
+
+    return render(request, "base/track_order_form.html")

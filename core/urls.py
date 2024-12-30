@@ -22,8 +22,10 @@ urlpatterns = [
     path("login/", V.login_view, name="login" ),
     path("signup/", V.signup_view, name="signup" ),
     path("logout/", V.signout, name="logout" ),
+    path ("forget/",V.forgot, name="forget"),
     path("about/", V.about_view, name="about" ),
     path("contact/",V.contact_view, name="contact"),
-    path('contact_success/', V.contact_success, name='contact_success'),
+    path('track-order/', V.track_order_view, name='track_order'),
+    path('reset/<str:uidb64>/<str:token>/', V.change, name='change'),
 ]
 

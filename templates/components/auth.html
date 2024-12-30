@@ -5,7 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Auth</title>
-    <!-- Fontawesome CDN Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -41,14 +40,14 @@
                         {% csrf_token %}
                         <div class="input-boxes">
                             <div class="input-box">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-user"></i>
                                 <input type="text" placeholder="Enter your username" required name="user-login">
                             </div>
                             <div class="input-box">
                                 <i class="fas fa-lock"></i>
                                 <input type="password" placeholder="Enter your password" required name="password">
                             </div>
-                            <div class="text"><a href="#">Forgot password?</a></div>
+                            <div class="text"><a href="{% url 'forget' %}">Forgot password?</a></div>
                             <div class="button input-box">
                                 <input type="submit" value="Sumbit">
                             </div>
@@ -58,7 +57,6 @@
                         </div>
                     </form>
                 </div>
-                
                 {% elif form_type == "signup" %}
                 <div class="signup-form">
                     <div class="title">Signup</div>
@@ -71,7 +69,7 @@
                             </div>
                             <div class="input-box">
                                 <i class="fas fa-envelope"></i>
-                                <input type="text" placeholder="Enter your email" required name="email">
+                                <input type="email" placeholder="Enter your email" required name="email">
                             </div>
                             <div class="input-box">
                                 <i class="fas fa-lock"></i>
@@ -86,12 +84,48 @@
                         </div>
                     </form>
                 </div>
+                {% elif form_type == "forget" %}
+                <div class="forget-form">
+                <div class="title">Forget</div>
+                <form method="POST">
+                    {% csrf_token %}
+                <div class="input-boxes">
+                    <div class="input-box">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Enter your email" required name="pass-forgot">
+                    </div>
+                    <div class="button input-box">
+                        <input type="submit" value="Send Reset Link">
+                    </div>
+                </form>
+                <div class="text sign-up-text">Remember password? 
+                    <a href="{% url 'auth' 'login' %}"><span style="color: blue;">Login now</span></a>
+                </div>
+                </div>
+                </div>
+                {% elif form_type == "change" %}
+                <div class="forget-form">
+                <div class="title">Change Password</div>
+               <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-box">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password1" placeholder="Enter New password" required name="password1">
+                    </div>
+                    <div class="input-box">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password2" placeholder="Enter Confirm password" required name="password2">
+                    </div>
+                    <div class="button input-box">
+                        <input type="submit" value="Reset Password">
+                    </div>
+                </form>
+                </div>
+                
                 {% endif %}
             </div>
         </div>
     </div>
-
-
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');

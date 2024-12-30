@@ -16,12 +16,12 @@ TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN", default="")
 TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER", default="")
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
 STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY", default="")
-DEBUG = True if config("DEBUG", default=False) == "True" else False
+DEBUG = True 
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'IQcollections <iqcollectionsstore@gmail.com>'
+ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = ["18.184.213.95"]
 
-if DEBUG:
-    ALLOWED_HOSTS.append("*")
 
 
 INSTALLED_APPS = [

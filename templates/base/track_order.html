@@ -1,0 +1,43 @@
+{% extends 'base/layout.html' %}
+{% load static %}
+{% block site_content %}
+<br>
+<br>
+<br>
+
+<div class="container mt-5">
+    <h2>Order Details</h2>
+    <table class="table table-bordered">
+        <tr>
+            <th>Order ID</th>
+            <td>{{ order.id }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ order.get_status_display }}</td>
+        </tr>
+        <tr>
+            <th>Payment Status</th>
+            <td>{{ order.get_payment_status_display }}</td>
+        </tr>
+        <tr>
+            <th>Payment Method</th>
+            <td>{{ order.get_payment_method_display }}</td>
+        </tr>
+        <tr>
+            <th>Total Amount</th>
+            <td>${{ order.total_amount }}</td>
+        </tr>
+        <tr>
+            <th>Shipping Address</th>
+            <td>
+                {{ order.shipping_address.address_line1 }},
+                {{ order.shipping_address.city }},
+                {{ order.shipping_address.state }},
+                {{ order.shipping_address.postal_code }}
+            </td>
+        </tr>
+    </table>
+    <a href="{% url 'track_order' %}" class="btn btn-secondary">Back to Tracking</a>
+</div>
+{% endblock site_content %}
