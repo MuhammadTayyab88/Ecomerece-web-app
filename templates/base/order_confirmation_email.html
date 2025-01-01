@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background-color: #4caf50;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 20px;
+            color: #333333;
+        }
+        .email-body p {
+            margin: 0 0 15px;
+            line-height: 1.6;
+        }
+        .email-footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f1f1f1;
+            font-size: 14px;
+            color: #666666;
+        }
+        .email-footer a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Order Confirmation</h1>
+        </div>
+        <div class="email-body">
+            <p>Dear {{ user.username }},</p>
+            <p>Thank you for your order!</p>
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+            <p>We are processing your order and will notify you once it's ready for shipping.</p>
+            <p>If you have any questions, feel free to contact us at <a href="mailto:iqcollectionsstore@gmail.com.com">Contact</a>.</p>
+            <p>Thank you for choosing IQ Collections!</p>
+        </div>
+        <div class="email-footer">
+            <p>&copy; {{ current_year }} IQ Collections. All rights reserved.</p>
+            <p><a href="https://www.iqcollectionsstore.com">Visit our website</a></p>
+        </div>
+    </div>
+</body>
+</html>

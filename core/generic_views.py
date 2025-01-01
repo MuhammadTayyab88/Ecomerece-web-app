@@ -294,53 +294,61 @@ def order_view(request):
         postal_code = request.POST.get("postal_code")
         user = request.user
 
-        # Create a new address
-        address = Address.objects.create(
-            user=user,
-            phone_number=phone_number,
-            address_line1=address_line1,
-            city=city,
-            state=state,
-            postal_code=postal_code,
-            address_type="shipping",
-        )
+        if phone_number and address_line1 and city and state and postal_code:
+            # Create a new address
+            address = Address.objects.create(
+                user=user,
+                phone_number=phone_number,
+                address_line1=address_line1,
+                city=city,
+                state=state,
+                postal_code=postal_code,
+                address_type="shipping",
+            )
 
-        # Calculate total price
-        cart_items = Cart.objects.filter(user=user)
-        total_product_price = cart_items.aggregate(
-            total=Sum(F('quantity') * F('product__sale_price'))
-        )['total'] or 0
+            # Calculate total price
+            cart_items = Cart.objects.filter(user=user)
+            total_product_price = cart_items.aggregate(
+                total=Sum(F('quantity') * F('product__sale_price'))
+            )['total'] or 0
 
-        # Create a new order
-        import uuid
-        order = Order.objects.create(
-            user=user,
-            shipping_address=address,
-            billing_address=address,
-            total_amount=total_product_price + 200,  # Adding shipping charges
-            transaction_id=str(uuid.uuid4().int)[:5],
-        )
+            # Create a new order
+            order = Order.objects.create(
+                user=user,
+                shipping_address=address,
+                billing_address=address,
+                total_amount=total_product_price + 200,  # Adding shipping charges
+                transaction_id=str(uuid.uuid4().int)[:5],
+            )
 
-        # Clear the cart
-        cart_items.delete()
+            # Clear the cart
+            cart_items.delete()
 
-        # Send email confirmation
-        subject = "Order Confirmation - Your Order Details"
-        message = (
-            f"Hello {user.username},\n\n"
-            f"Thank you for your order!\n"
-            f"Order ID: {order.id}\n"
-            f"Total Amount: ${order.total_amount}\n\n"
-            f"You can track your order using the Order ID.\n"
-            f"If you have any questions, feel free to contact our support team.\n\n"
-            f"Best regards,\nThe Team"
-        )
-        recipient_list = [user.email]
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list)
+            # Generate email content
+            mail_subject = "Order Confirmation"
+            reset_link = f"http://{request.get_host()}/orders/{order.id}/"
+            html_content = render_to_string('base/order_confirmation_email.html', {
+                'user': user,
+                'order': order,
+                'reset_link': reset_link,
+            })
+            plain_message = strip_tags(html_content)
 
-        # Success message and redirect
-        messages.success(request, "Order placed successfully. A confirmation email has been sent.")
-        return redirect("user_cart")
+            # Send email using EmailMultiAlternatives
+            email = EmailMultiAlternatives(
+                subject=mail_subject,
+                body=plain_message,
+                from_email='iqcollectionsstore@gmail.com',
+                to=[user.email]
+            )
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
+            messages.success(request, "Order placed successfully. A confirmation email has been sent.")
+            return redirect("user_cart")
+        else:
+            messages.error(request, "Please fill in all required fields.")
+            return redirect("user_cart")
 
     return redirect("user_cart")
 
