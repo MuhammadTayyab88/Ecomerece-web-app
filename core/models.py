@@ -110,6 +110,8 @@ class Order(BaseModel):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    phone_number = models.CharField(max_length=12)  
+    cart_details = models.TextField()
     shipping_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, related_name='shipping_orders')
     billing_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, related_name='billing_orders')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)

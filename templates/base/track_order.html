@@ -37,6 +37,12 @@
                 {{ order.shipping_address.postal_code }}
             </td>
         </tr>
+        <tr>
+            <th>Products</th>
+            <td>
+                {{ order.cart_details }}
+            </td>
+        </tr>
     </table>
     <a href="{% url 'track_order' %}" class="btn btn-secondary">Back to Tracking</a>
 </div>

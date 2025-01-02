@@ -284,9 +284,12 @@ def remove_from_cart(request, item_id):
             return redirect('home')  # Adjust as needed for your flow
     return redirect('home')  # Adjust as needed
 
+
+
 @login_required(login_url='/auth/login/')
 def order_view(request):
     if request.method == "POST":
+        # Get form data
         phone_number = request.POST.get("phone_number")
         address_line1 = request.POST.get("address_line1")
         city = request.POST.get("city")
@@ -295,7 +298,7 @@ def order_view(request):
         user = request.user
 
         if phone_number and address_line1 and city and state and postal_code:
-            # Create a new address
+            # Create an address instance
             address = Address.objects.create(
                 user=user,
                 phone_number=phone_number,
@@ -306,18 +309,30 @@ def order_view(request):
                 address_type="shipping",
             )
 
-            # Calculate total price
+            # Get cart items for the user
             cart_items = Cart.objects.filter(user=user)
+            if not cart_items.exists():
+                messages.error(request, "Your cart is empty!")
+                return redirect("user_cart")
+
+            # Calculate total amount
             total_product_price = cart_items.aggregate(
                 total=Sum(F('quantity') * F('product__sale_price'))
             )['total'] or 0
+            total_amount = total_product_price + 200  # Adding shipping charges
+
+            # Generate cart details
+            cart_details = "\n".join(
+                f"{item.product.name} (x{item.quantity})" for item in cart_items
+            )
 
             # Create a new order
             order = Order.objects.create(
                 user=user,
-                shipping_address=address,
-                billing_address=address,
-                total_amount=total_product_price + 200,  # Adding shipping charges
+                phone_number=phone_number,
+                shipping_address=address,  # Assign the Address instance here
+                total_amount=total_amount,
+                cart_details=cart_details,
                 transaction_id=str(uuid.uuid4().int)[:5],
             )
 
@@ -351,6 +366,8 @@ def order_view(request):
             return redirect("user_cart")
 
     return redirect("user_cart")
+
+
 
     
         
